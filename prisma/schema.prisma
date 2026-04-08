@@ -29,6 +29,13 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
 model User {
   id String @id @default(uuid())
   email String @unique
@@ -93,13 +100,26 @@ model Category{
 
 model OrderItem{
   id String @id @default(uuid())
+  quantity Int
+  price Decimal @db.Decimal(10,2)
   productId String
   product Product @relation(fields: [productId], references: [id])
 
   orderId String
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([productId])
+  @@map("order_items")
+
+
+
 }
+
 model CartItems{
   id String @id @default(uuid())
   productId String
@@ -146,11 +166,20 @@ model Cart {
 
 model Payment {
   id String @id @default(uuid())
+  amount Decimal @db.Decimal(10,2)
+  status PaymentStatus @default(PENDING)
+  currency String @default("usd")
+  paymentMethod String?
+  transactionId String?
+
+
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-
   orderId String @unique
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
 }
