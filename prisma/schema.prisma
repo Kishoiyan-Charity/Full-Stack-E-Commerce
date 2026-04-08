@@ -144,3 +144,13 @@ model Cart {
   orders Order[]
 }
 
+model Payment {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+
+  orderId String @unique
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+}
