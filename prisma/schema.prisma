@@ -135,3 +135,12 @@ model Order {
 
 }
 
+model Cart {
+  id String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+
+  orders Order[]
+}
+
