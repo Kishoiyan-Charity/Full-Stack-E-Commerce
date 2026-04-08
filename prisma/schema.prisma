@@ -72,7 +72,7 @@ model Product {
 
   //Relations
   orderItems OrderItem[]
-  cartItems CartItems[]
+  cartItems CartItem[]
 
   categoryId String
   category Category @relation(fields: [categoryId], references: [id])
@@ -120,10 +120,13 @@ model OrderItem{
 
 }
 
-model CartItems{
-  id String @id @default(uuid())
+model CartItem{
+  id        String @id @default(uuid())
   productId String
-  product Product @relation(fields: [productId], references: [id])
+  product   Product @relation(fields: [productId], references: [id])
+
+  cartId String
+  cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
 
 }
 
@@ -160,8 +163,13 @@ model Cart {
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-
   orders Order[]
+  checkedOut Boolean @default(false)
+
+  cartItems CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Payment {
@@ -181,5 +189,10 @@ model Payment {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([userId])
+  @@index([transactionId])
+  @@map("payments")
 
 }
