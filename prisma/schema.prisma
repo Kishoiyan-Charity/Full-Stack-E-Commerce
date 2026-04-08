@@ -93,6 +93,11 @@ model Product {
 
 model Category{
   id String @id @default(uuid())
+  name String
+  description String?
+  slug String @unique
+  imageUrl String?
+  isActive Boolean @default(true)
   products Product[]
 
 
@@ -122,11 +127,20 @@ model OrderItem{
 
 model CartItem{
   id        String @id @default(uuid())
+  quantity  Int @default(1)
   productId String
   product   Product @relation(fields: [productId], references: [id])
 
   cartId String
   cart Cart @relation(fields: [cartId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cartId, productId])
+  @@index([cartId])
+  @@index([productId])
+  @@map("carts_items")
 
 }
 
@@ -170,6 +184,9 @@ model Cart {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@map("carts")
 }
 
 model Payment {
