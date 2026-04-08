@@ -21,6 +21,14 @@ enum Role {
   ADMIN
 }
 
+enum OrderStatus {
+  PENDING
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
 model User {
   id String @id @default(uuid())
   email String @unique
@@ -30,16 +38,56 @@ model User {
   role Role @default(USER)
   refreshToken String?
 
+
   //Relations
-
   orders Order[]
+  carts Cart[]
+  payments Payment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@map("users") //the name of tables
 
 }
 
-model Order {
+model Product {
   id String @id @default(uuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
+  name String
+  description String?
+  price Decimal @db.Decimal(10,2)
+  stock Int @default(0)
+  sku String @unique
+  imageUrl String?
+  isActive Boolean @default(true)
+
+
+  //Relations
+  orderItems OrderItem[]
+  cartItems CartItems[]
+
+  categoryId String
+  category Category @relation(fields: [categoryId], references: [id])
+
+  //Timestamps
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([sku])
+  @@index([categoryId])
+  @@index([isActive])
+  @@map("products")
+
 
 
 }
+
+model Category{
+  id String @id @default(uuid())
+  products Product[]
+
+
+}
+
