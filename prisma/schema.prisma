@@ -100,3 +100,10 @@ model OrderItem{
   order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
 
 }
+model CartItems{
+  id String @id @default(uuid())
+  productId String
+  product Product @relation(fields: [productId], references: [id])
+
+}
+
