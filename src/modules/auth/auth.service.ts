@@ -3,11 +3,16 @@ import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import * as bcrypt from 'bcrypt';
+import { randomBytes } from 'node:crypto';
+import { jwtService } from '@nestjs/jwt'
 
 @Injectable()
 export class AuthService {
   private readonly SALT_ROUNDS = 12;
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private jwtService: jwtService,
+  ) {}
 
   //REGISTER A NEW USER
   async register(registerDto: RegisterDto): Promise<AuthResponseDto> {
@@ -40,6 +45,17 @@ export class AuthService {
       });
 
       const tokens = await this.generateTokens(user.id, user.email);
-    } catch (_error) {}
+    } catch (_error)
+  }
+
+  private  async generateTokens(
+    userId: string,
+    email: string
+  ):Promise<{ accessToken: string; refreshToken: string}> {
+    const payload = { sub: userId, email };
+    const refreshId = randomBytes(16).toString('hex');
+    const [accessToken, refreshToken ] = await Promise.all([
+      this.jwtService.signAsync(payload),
+    ])
   }
 }
