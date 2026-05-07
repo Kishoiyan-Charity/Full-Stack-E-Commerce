@@ -1,10 +1,14 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { PrismaService } from '../../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'node:crypto';
-import { jwtService } from '@nestjs/jwt'
+import { jwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
@@ -45,17 +49,42 @@ export class AuthService {
       });
 
       const tokens = await this.generateTokens(user.id, user.email);
-    } catch (_error)
+
+      await this.updateRefreshToken(user.id, tokens.refreshToken);
+
+      return {
+        ...tokens,
+        user,
+      };
+    } catch (_error) {
+      console.log('Error while creating user', _error);
+      throw new InternalServerErrorException(
+        'An error has occurred during registration',
+      );
+    }
   }
 
-  private  async generateTokens(
+  private async generateTokens(
     userId: string,
-    email: string
-  ):Promise<{ accessToken: string; refreshToken: string}> {
+    email: string,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const payload = { sub: userId, email };
     const refreshId = randomBytes(16).toString('hex');
-    const [accessToken, refreshToken ] = await Promise.all([
-      this.jwtService.signAsync(payload),
-    ])
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, { expiresIn: '15m' }),
+      this.jwtService.signAsync({ ...payload, refreshId }, { expiresIn: '7d' }),
+    ]);
+
+    return { accessToken, refreshToken };
+  }
+
+  async updateRefreshToken(
+    userId: string,
+    refreshToken: string,
+  ): Promise<void> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { refreshToken },
+    });
   }
 }
