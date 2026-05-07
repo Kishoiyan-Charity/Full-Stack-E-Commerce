@@ -8,14 +8,14 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthResponseDto } from './dto/auth-response.dto';
 import * as bcrypt from 'bcrypt';
 import { randomBytes } from 'node:crypto';
-import { jwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
   private readonly SALT_ROUNDS = 12;
   constructor(
     private prisma: PrismaService,
-    private jwtService: jwtService,
+    private jwtService: JwtService,
   ) {}
 
   //REGISTER A NEW USER
