@@ -8,7 +8,6 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   //register api
-
   async register(@Body() registerDto: RegisterDto): Promise<AuthResponseDto> {
     return await this.authService.register(registerDto);
   }
