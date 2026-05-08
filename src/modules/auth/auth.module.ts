@@ -15,7 +15,7 @@ import { RefreshTokenStrategy } from './strategies/refresh-token-strategy';
       useFactory: (configService: ConfigService) => ({
         secret: configService.get<string>('JWT_SECRET') ?? 'defaultsecret2025',
         signOptions: {
-          expireIn: Number(configService.get<number>('JWT_EXPIRES_IN', 900)),
+          expiresIn: Number(configService.get<number>('JWT_EXPIRES_IN', 900)),
         },
       }),
     }),
