@@ -65,8 +65,7 @@ export class UsersController {
 
   // Update current user profile
   @Patch('me')
-  @Roles(Role.ADMIN)
-  @ApiOperation({ summary: 'Get user by Id' })
+  @ApiOperation({ summary: 'Update current User' })
   @ApiResponse({
     status: 200,
     description: 'Get users with rhe specific id',
