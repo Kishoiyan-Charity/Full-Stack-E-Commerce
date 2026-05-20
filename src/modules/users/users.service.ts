@@ -64,5 +64,14 @@ export class UsersService {
         throw new NotFoundException('Email already taken');
       }
     }
+
+    //Update user
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: updatedUserDto,
+      select: {},
+    });
+
+    return updatedUser;
   }
 }
