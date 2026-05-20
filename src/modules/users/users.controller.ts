@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common';
+import { Controller, Get, Param, Patch, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiOperation,
@@ -64,7 +64,7 @@ export class UsersController {
   }
 
   // Update current user profile
-  @Get(':id')
+  @Patch('me')
   @Roles(Role.ADMIN)
   @ApiOperation({ summary: 'Get user by Id' })
   @ApiResponse({
