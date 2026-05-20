@@ -2,10 +2,16 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role } from '@prisma/client';
 import { ROLES_KEY } from '../decorators/roles.decorator';
+import { Observable } from 'rxjs';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
   constructor(private reflector: Reflector) {}
+  canActivate(
+    _context: ExecutionContext,
+  ): boolean | Promise<boolean> | Observable<boolean> {
+    throw new Error('Method not implemented.');
+  }
 
   canActive(context: ExecutionContext): boolean {
     const requireRoles = this.reflector.getAllAndOverride<Role[]>(ROLES_KEY, [
