@@ -62,4 +62,19 @@ export class UsersController {
   async findOne(@Param('id') id: string): Promise<UserResponseDto> {
     return await this.usersService.findOne(id);
   }
+
+  // Update current user profile
+  @Get(':id')
+  @Roles(Role.ADMIN)
+  @ApiOperation({ summary: 'Get user by Id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Get users with rhe specific id',
+    type: [UserResponseDto],
+  })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async findOne(@Param('id') id: string): Promise<UserResponseDto> {
+    return await this.usersService.findOne(id);
+  }
 }
